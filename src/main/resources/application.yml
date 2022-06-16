@@ -1,3 +1,10 @@
+postgres:
+  url: ${POSTGRES_URL}
+  username: ${POSTGRES_USER}
+  password: ${POSTGRES_PASSWORD}
+  max-active-connections: 10
+  max-pending-queries: 100
+
 app:
   url: ${APP_URL}
   api-path: ${API_PATH:/}

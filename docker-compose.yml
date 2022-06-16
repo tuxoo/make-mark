@@ -1,0 +1,43 @@
+version: "3.5"
+
+services:
+  postgres-mmark:
+    container_name: postgres-mmark
+    image: postgres:${POSTGRES_VERSION}
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    command: postgres -c 'config_file=/etc/postgresql/postgresql.conf'
+    volumes:
+      - ./.docker-volumes/postgres:/var/lib/postgresql/data
+      - ./postgres/postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - ${POSTGRES_PORT}:5432
+    networks:
+      mmark-net:
+        ipv4_address: 172.28.1.1
+
+  liquibase-mmark:
+    container_name: liquibase-mmark
+    image: liquibase/liquibase:${LIQUIBASE_VERSION}
+    restart: on-failure
+    command: --defaultsFile=liquibase.properties update
+    depends_on:
+      - postgres-mmark
+    volumes:
+      - ./db/:/liquibase/changelog/
+      - ./db/:/liquibase/classpath/
+      - ./db/liquibase.properties:/liquibase/liquibase.properties
+    networks:
+      mmark-net:
+        ipv4_address: 172.28.1.2
+
+networks:
+  mmark-net:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16
