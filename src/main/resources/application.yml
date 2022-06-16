@@ -1,0 +1,5 @@
+app:
+  url: ${APP_URL}
+  api-path: ${API_PATH:/}
+  jwt-signing-key: ${JWT_SIGNING_KEY}
+  token-ttl: ${TOKEN_TTL:4}
