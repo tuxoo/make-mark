@@ -5,8 +5,8 @@ postgres:
   db: ${POSTGRES_DB}
   username: ${POSTGRES_USER}
   password: ${POSTGRES_PASSWORD}
-  max-active-connections: 10
-  max-pending-queries: 100
+  max-active-connections: 5
+  max-pending-queries: 100000
   max-connection-ttl: 120000
   max-idle-time: 300
 
