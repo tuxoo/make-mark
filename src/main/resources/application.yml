@@ -1,3 +1,7 @@
+cache:
+  user-maximum-size: 100000
+  user-expired-time-hours: 1
+
 postgres:
   url: ${POSTGRES_URL}
   host: ${POSTGRES_HOST}

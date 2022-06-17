@@ -31,7 +31,7 @@ class JwtAuthenticationManager(
             ?: error("incorrect user")
 
         if (jwtProvider.validateToken(token, user)) {
-            return UsernamePasswordAuthenticationToken(user.username, user.password, user.authorities)
+            return UsernamePasswordAuthenticationToken(user, "", user.authorities)
         }
 
         throw IllegalArgumentException("Token is not valid.")

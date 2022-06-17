@@ -1,7 +1,9 @@
 package com.makemark.service
 
+import com.github.benmanes.caffeine.cache.AsyncCache
 import com.github.jasync.sql.db.SuspendingConnection
 import com.makemark.config.security.JwtProvider
+import com.makemark.extension.getSuspending
 import com.makemark.model.dto.SignInDTO
 import com.makemark.model.dto.SignUpDTO
 import com.makemark.model.dto.TokenDTO
@@ -17,33 +19,31 @@ import java.util.*
 @Service
 class UserService(
     private val pool: SuspendingConnection,
+    private val userCache: AsyncCache<UUID, UserDTO>,
     private val userRepository: UserRepository,
     private val jwtProvider: JwtProvider
 ) {
 
     suspend fun signUp(signUpDTO: SignUpDTO): Unit =
-        pool.inTransaction {
-            userRepository.save(
-                it, User(
-                    name = signUpDTO.name,
-                    loginEmail = signUpDTO.email,
-                    passwordHash = HashUtils.HashSHA1(signUpDTO.password),
-                    registeredAt = Instant.now(),
-                    visitedAt = Instant.now()
-                )
+        userRepository.save(
+            pool, User(
+                name = signUpDTO.name,
+                loginEmail = signUpDTO.email,
+                passwordHash = HashUtils.HashSHA1(signUpDTO.password),
+                registeredAt = Instant.now(),
+                visitedAt = Instant.now()
             )
-        }
+        )
 
 
-    suspend fun signIn(signInDTO: SignInDTO): TokenDTO = pool.inTransaction {
+    suspend fun signIn(signInDTO: SignInDTO): TokenDTO =
         userRepository.findByCredentials(
-            connection = it,
+            connection = pool,
             email = signInDTO.email,
             passwordHash = HashUtils.HashSHA1(signInDTO.password)
-        )
-    }.run {
-        TokenDTO(jwtProvider.generateToken(this.id.toString()).value)
-    }
+        ).run {
+            TokenDTO(jwtProvider.generateToken(this.id.toString()).value)
+        }
 
     suspend fun getUserProfile(principal: Principal): UserDTO {
         return getByLoginEmail(principal.name)
@@ -51,12 +51,10 @@ class UserService(
 
 
     suspend fun getById(id: UUID): UserDTO =
-        pool.inTransaction {
-            userRepository.findById(it, id)
+        userCache.getSuspending(id) {
+            userRepository.findById(pool, id)
         }
 
     suspend fun getByLoginEmail(email: String): UserDTO =
-        pool.inTransaction {
-            userRepository.findByEmail(it, email)
-        }
+        userRepository.findByEmail(pool, email)
 }

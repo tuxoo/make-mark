@@ -14,9 +14,7 @@ import org.springframework.security.web.server.authentication.AuthenticationWebF
 import reactor.core.publisher.Mono
 
 @EnableWebFluxSecurity
-class SecurityConfig(
-
-) {
+class SecurityConfig {
 
     companion object {
         val authorizeURIs = listOf("/api/v1/user/sign-up", "/api/v1/user/sign-in")

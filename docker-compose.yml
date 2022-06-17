@@ -35,20 +35,6 @@ services:
       mmark-net:
         ipv4_address: 172.28.1.2
 
-  redis-mmark:
-    container_name: redis-mmark
-    image: redis:${REDIS_VERSION}
-    restart: unless-stopped
-    command: redis-server --include /usr/local/etc/redis/redis.conf
-    volumes:
-      - ./redis:/usr/local/etc/redis
-      - ./.docker-volumes/redis:/data
-    ports:
-      - ${REDIS_PORT}:6379
-    networks:
-      mmark-net:
-        ipv4_address: 172.28.1.6
-
 networks:
   mmark-net:
     ipam:
