@@ -1,13 +1,13 @@
 package com.makemark.config.security
 
 import com.makemark.model.exception.InvalidBearerToken
+import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.reactor.mono
 import org.springframework.security.authentication.ReactiveAuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
-import java.time.Duration
 
 @Component
 class JwtAuthenticationManager(
@@ -27,7 +27,7 @@ class JwtAuthenticationManager(
         val userId = jwtProvider.getUserIdFromToken(token)
         val user = userDetailsService.findById(userId)
             .cast(MmarkUserDetails::class.java)
-            .block(Duration.ofMillis(100)) // TODO:
+            .awaitSingleOrNull()
             ?: error("incorrect user")
 
         if (jwtProvider.validateToken(token, user)) {

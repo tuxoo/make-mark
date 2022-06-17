@@ -18,8 +18,8 @@ class JwtProvider(
 
 //    private val parser = Jwts.parserBuilder().setSigningKey(applicationProperty.jwtSigningKey).build()
 
-    suspend fun generateToken(login: String): BearerToken = Jwts.builder()
-        .setExpiration(Date.from(Instant.now().plus(15, ChronoUnit.MINUTES)))
+    fun generateToken(login: String): BearerToken = Jwts.builder()
+        .setExpiration(Date.from(Instant.now().plus(15, ChronoUnit.DAYS)))
         .setSubject(login)
 //        .signWith(SignatureAlgorithm.HS256, applicationProperty.jwtSigningKey)
         .setIssuedAt(Date.from(Instant.now()))

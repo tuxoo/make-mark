@@ -1,9 +1,14 @@
 postgres:
   url: ${POSTGRES_URL}
+  host: ${POSTGRES_HOST}
+  port: ${POSTGRES_PORT}
+  db: ${POSTGRES_DB}
   username: ${POSTGRES_USER}
   password: ${POSTGRES_PASSWORD}
   max-active-connections: 10
   max-pending-queries: 100
+  max-connection-ttl: 120000
+  max-idle-time: 300
 
 app:
   url: ${APP_URL}

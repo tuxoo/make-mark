@@ -2,7 +2,6 @@ package com.makemark.service
 
 import com.github.jasync.sql.db.SuspendingConnection
 import com.makemark.config.security.JwtProvider
-import com.makemark.config.security.MmarkUserDetailsService
 import com.makemark.model.dto.SignInDTO
 import com.makemark.model.dto.SignUpDTO
 import com.makemark.model.dto.TokenDTO
@@ -23,20 +22,18 @@ class UserService(
 ) {
 
     suspend fun signUp(signUpDTO: SignUpDTO): Unit =
-        HashUtils.HashSHA1(signUpDTO.password)
-            .run {
-                pool.inTransaction {
-                    userRepository.save(
-                        it, User(
-                            name = signUpDTO.name,
-                            loginEmail = signUpDTO.email,
-                            passwordHash = this,
-                            registeredAt = Instant.now(),
-                            visitedAt = Instant.now()
-                        )
-                    )
-                }
-            }
+        pool.inTransaction {
+            userRepository.save(
+                it, User(
+                    name = signUpDTO.name,
+                    loginEmail = signUpDTO.email,
+                    passwordHash = HashUtils.HashSHA1(signUpDTO.password),
+                    registeredAt = Instant.now(),
+                    visitedAt = Instant.now()
+                )
+            )
+        }
+
 
     suspend fun signIn(signInDTO: SignInDTO): TokenDTO = pool.inTransaction {
         userRepository.findByCredentials(
