@@ -8,5 +8,6 @@ import org.springframework.boot.context.properties.ConstructorBinding
 data class ApplicationProperty(
     val url: String,
     val apiPath: String,
-    val jwtSigningKey: String
+    val jwtSigningKey: String,
+    val tokenTTL: Long
 )

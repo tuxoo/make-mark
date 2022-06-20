@@ -10,18 +10,15 @@ import java.util.*
 
 @Component
 class JwtProvider(
-    private val applicationProperty: ApplicationProperty,
+    private val property: ApplicationProperty,
 ) {
 
-    private val key = Keys.hmacShaKeyFor("tNO+KhVrTj3B4q0+SEwz/NSvZq7y577jOjvY4uPgAR4=".toByteArray())
+    private val key = Keys.hmacShaKeyFor(property.jwtSigningKey.toByteArray())
     private val parser = Jwts.parserBuilder().setSigningKey(key).build()
-
-//    private val parser = Jwts.parserBuilder().setSigningKey(applicationProperty.jwtSigningKey).build()
-
+    
     fun generateToken(login: String): BearerToken = Jwts.builder()
-        .setExpiration(Date.from(Instant.now().plus(15, ChronoUnit.DAYS)))
+        .setExpiration(Date.from(Instant.now().plus(property.tokenTTL, ChronoUnit.HOURS)))
         .setSubject(login)
-//        .signWith(SignatureAlgorithm.HS256, applicationProperty.jwtSigningKey)
         .setIssuedAt(Date.from(Instant.now()))
         .signWith(key)
         .run {

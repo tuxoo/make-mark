@@ -15,20 +15,6 @@ class PostgresConfig(
     private val postgresProperty: PostgresProperty
 ) {
 
-//    @Bean
-//    @Primary
-//    fun pool(properties: PostgresProperty): SuspendingConnection =
-//        PostgreSQLConnectionBuilder.createConnectionPool(properties.url) {
-//            username = properties.username
-//            password = properties.password
-//            maxActiveConnections = properties.maxActiveConnections
-//            maxPendingQueries = properties.maxPendingQueries
-//            ssl = SSLConfiguration(SSLConfiguration.Mode.Prefer)
-//            maxConnectionTtl = properties.maxConnectionTtl
-//            maxIdleTime = properties.maxIdleTime
-//
-//        }.asSuspending
-
     private val configuration = JasyncConfiguration(
         postgresProperty.username,
         postgresProperty.host,
@@ -39,7 +25,6 @@ class PostgresConfig(
 
     private val poolConfiguration = ConnectionPoolConfiguration(
         maxActiveConnections = postgresProperty.maxActiveConnections,
-//        maxPendingQueries = postgresProperty.maxPendingQueries,
         maxConnectionTtl = postgresProperty.maxConnectionTtl,
         maxIdleTime = postgresProperty.maxIdleTime
     )

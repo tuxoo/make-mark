@@ -21,6 +21,10 @@ class UserController(
     suspend fun signUp(@RequestBody signUpDTO: SignUpDTO): Unit =
         userService.signUp(signUpDTO)
 
+    @PostMapping("/verify/{code}")
+    suspend fun verifyUser(@AuthenticationPrincipal principal: Principal, @PathVariable code: String): Unit =
+        userService.verifyUser(principal, code)
+
     @PostMapping("/sign-in")
     suspend fun signIn(@RequestBody signInDTO: SignInDTO): TokenDTO =
         userService.signIn(signInDTO)

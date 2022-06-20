@@ -20,8 +20,7 @@ class MmarkUserDetailsService(
                     MmarkUserDetails.toMmarkUserDetails(this)
                 }
         }
-
-
+    
     fun findById(id: UUID): Mono<UserDetails> =
         mono {
             userService.getById(id)
@@ -29,6 +28,4 @@ class MmarkUserDetailsService(
                     MmarkUserDetails.toMmarkUserDetails(this)
                 }
         }
-
-
 }

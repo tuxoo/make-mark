@@ -51,6 +51,9 @@ class UserRepository {
             )
         }
 
+    suspend fun updateUser(connection: SuspendingConnection, id: UUID) =
+        connection.execute("UPDATE $userTable SET is_enabled=true WHERE id=?", listOf(id.toString()))
+
     suspend fun findByCredentials(connection: SuspendingConnection, email: String, passwordHash: String): UserDTO =
         connection.select(
             "SELECT id, name, login_email, registered_at, visited_at, role, is_enabled FROM $userTable WHERE is_enabled=true AND login_email=? AND password_hash=?",
@@ -58,10 +61,10 @@ class UserRepository {
             userDTOMapper
         ) ?: error("user not found by credentials")
 
-    suspend fun findById(connection: SuspendingConnection, id: UUID): UserDTO =
+    suspend fun findById(connection: SuspendingConnection, id: UUID, isEnabled: Boolean): UserDTO =
         connection.select(
-            "SELECT id, name, login_email, registered_at, visited_at, role, is_enabled FROM $userTable WHERE is_enabled=true AND id=?",
-            listOf(id),
+            "SELECT id, name, login_email, registered_at, visited_at, role, is_enabled FROM $userTable WHERE id=? AND is_enabled=?",
+            listOf(id, isEnabled),
             userDTOMapper
         ) ?: error("user not found by id")
 

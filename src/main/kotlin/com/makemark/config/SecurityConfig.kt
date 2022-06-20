@@ -16,10 +16,6 @@ import reactor.core.publisher.Mono
 @EnableWebFluxSecurity
 class SecurityConfig {
 
-    companion object {
-        val authorizeURIs = listOf("/api/v1/user/sign-up", "/api/v1/user/sign-in")
-    }
-
     @Bean
     fun springSecurityFilterChain(
         converter: JwtServerAuthenticationConverter,
@@ -40,7 +36,7 @@ class SecurityConfig {
             }
             .and()
             .authorizeExchange()
-            .pathMatchers(HttpMethod.POST, "/api/v1/user/sign-up", "/api/v1/user/sign-in")
+            .pathMatchers(HttpMethod.POST, "/api/v1/user/sign-up", "/api/v1/user/verify/**", "/api/v1/user/sign-in")
             .permitAll()
             .anyExchange().authenticated()
             .and()
