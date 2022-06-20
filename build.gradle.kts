@@ -1,12 +1,8 @@
 //import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-//    id("org.jetbrains.kotlin.jvm")
-//    id("org.jetbrains.kotlin.plugin.allopen")
-//    id("org.jetbrains.kotlin.plugin.spring")
     id("org.springframework.boot") version "2.7.0"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
-//    id("org.jetbrains.kotlin.jvm") version "1.6.21"
     kotlin("jvm") version "1.6.21"
     kotlin("plugin.spring") version "1.6.21"
 }
@@ -24,6 +20,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
+    implementation("org.springdoc:springdoc-openapi-webflux-core:1.6.9")
+    implementation("org.springdoc:springdoc-openapi-webflux-ui:1.6.9")
     implementation("org.slf4j:slf4j-api:1.7.36")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
