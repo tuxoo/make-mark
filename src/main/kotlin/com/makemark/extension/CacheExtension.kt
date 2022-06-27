@@ -8,12 +8,21 @@ import kotlinx.coroutines.future.future
 suspend fun <K : Any, V : Any?> AsyncCache<K, V>.getSuspending(
     key: K,
     block: suspend (K) -> V
-): V {
-    return coroutineScope {
-        this@getSuspending.get(key) { k: K, _ ->
-            future(coroutineContext) {
-                block.invoke(k)
-            }
-        }.await()
-    }
+): V = coroutineScope {
+    this@getSuspending.get(key) { k: K, _ ->
+        future(coroutineContext) {
+            block.invoke(k)
+        }
+    }.await()
 }
+
+
+suspend fun <K : Any, V : Any?> AsyncCache<K, V>.putSuspending(
+    key: K,
+    value: V
+): Unit = coroutineScope {
+    this@putSuspending.put(key,
+        future(coroutineContext) { value }
+    )
+}
+

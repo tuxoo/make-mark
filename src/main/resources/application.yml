@@ -1,6 +1,9 @@
+server:
+  port: 9000
+
 cache:
   user-maximum-size: 100000
-  user-expired-time-hours: 1
+  user-expired-time-hours: 4
 
 postgres:
   url: ${POSTGRES_URL}
@@ -9,7 +12,7 @@ postgres:
   db: ${POSTGRES_DB}
   username: ${POSTGRES_USER}
   password: ${POSTGRES_PASSWORD}
-  max-active-connections: 5
+  max-active-connections: 25
   max-pending-queries: 100000
   max-connection-ttl: 120000
   max-idle-time: 300

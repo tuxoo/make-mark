@@ -6,6 +6,7 @@ import com.makemark.extension.*
 import com.makemark.model.dto.UserDTO
 import com.makemark.model.entity.User
 import com.makemark.model.enums.Role
+import com.makemark.model.exception.UserNotFoundException
 import org.springframework.stereotype.Repository
 import java.sql.Timestamp
 import java.util.*
@@ -59,19 +60,19 @@ class UserRepository {
             "SELECT id, name, login_email, registered_at, visited_at, role, is_enabled FROM $userTable WHERE is_enabled=true AND login_email=? AND password_hash=?",
             listOf(email, passwordHash),
             userDTOMapper
-        ) ?: error("user not found by credentials")
+        ) ?: throw UserNotFoundException("user not found by credentials")
 
     suspend fun findById(connection: SuspendingConnection, id: UUID, isEnabled: Boolean): UserDTO =
         connection.select(
             "SELECT id, name, login_email, registered_at, visited_at, role, is_enabled FROM $userTable WHERE id=? AND is_enabled=?",
             listOf(id, isEnabled),
             userDTOMapper
-        ) ?: error("user not found by id")
+        ) ?: throw UserNotFoundException("user not found by id")
 
-    suspend fun findByEmail(connection: SuspendingConnection, email: String): UserDTO =
+    suspend fun findByEmail(connection: SuspendingConnection, email: String, isEnabled: Boolean = true): UserDTO =
         connection.select(
-            "SELECT id, name, login_email, registered_at, visited_at, role, is_enabled FROM $userTable WHERE is_enabled=true AND login_email=?",
-            listOf(email),
+            "SELECT id, name, login_email, registered_at, visited_at, role, is_enabled FROM $userTable WHERE login_email=? AND is_enabled=?",
+            listOf(email, isEnabled),
             userDTOMapper
-        ) ?: error("user not found by email")
+        ) ?: throw UserNotFoundException("user not found by email")
 }

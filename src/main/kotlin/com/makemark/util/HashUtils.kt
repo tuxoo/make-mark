@@ -6,14 +6,15 @@ import java.security.NoSuchAlgorithmException
 
 object HashUtils {
 
-    fun HashSHA1(password: String): String =
+    private val mdSHA1: MessageDigest = MessageDigest.getInstance("SHA-1")
+
+    fun hashSHA1(password: String): String =
         try {
-            val md = MessageDigest.getInstance("SHA-1")
-            val bytes = md.digest(password.toByteArray(StandardCharsets.UTF_8))
+            val bytes = mdSHA1.digest(password.toByteArray(StandardCharsets.UTF_8))
             val sb = StringBuilder()
             for (b in bytes) sb.append(String.format("%02x", b))
             sb.toString()
         } catch (e: NoSuchAlgorithmException) {
-            ""
+            error("error occurred hashing")
         }
 }

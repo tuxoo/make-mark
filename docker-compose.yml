@@ -35,6 +35,20 @@ services:
       mmark-net:
         ipv4_address: 172.28.1.2
 
+  mmark-app:
+    container_name: mmark-app
+    build: ./
+#    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - 9000:9000
+    depends_on:
+      - postgres-mmark
+    networks:
+      mmark-net:
+        ipv4_address: 172.28.1.3
+
 networks:
   mmark-net:
     ipam:

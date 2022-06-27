@@ -23,6 +23,9 @@ class PostgresConfig(
         postgresProperty.db
     )
 
+    // maxActiveConnections = 25
+    // maxConnectionTtl = 120000
+    // maxIdleTime = 300
     private val poolConfiguration = ConnectionPoolConfiguration(
         maxActiveConnections = postgresProperty.maxActiveConnections,
         maxConnectionTtl = postgresProperty.maxConnectionTtl,
