@@ -32,5 +32,5 @@ class UserController(
 
     @GetMapping("/{email}")
     suspend fun getUserByEmail(@PathVariable email: String): UserDTO =
-        userService.getByLoginEmail(email)
+        userService.getByEmail(email)
 }

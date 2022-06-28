@@ -65,6 +65,6 @@ class UserService(
             userRepository.findById(pool, id, isEnabled)
         }
 
-    suspend fun getByLoginEmail(email: String): UserDTO =
+    suspend fun getByEmail(email: String): UserDTO =
         userRepository.findByEmail(pool, email)
 }

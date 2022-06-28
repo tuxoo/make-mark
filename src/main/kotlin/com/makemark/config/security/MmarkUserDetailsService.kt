@@ -15,7 +15,7 @@ class MmarkUserDetailsService(
 
     override fun findByUsername(login: String?): Mono<UserDetails> =
         mono {
-            userService.getByLoginEmail(login!!)
+            userService.getByEmail(login!!)
                 .run {
                     MmarkUserDetails.toMmarkUserDetails(this)
                 }
