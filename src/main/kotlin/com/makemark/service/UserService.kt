@@ -39,7 +39,7 @@ class UserService(
     suspend fun verifyUser(verifyDTO: VerifyDTO) {
         val user = userRepository.findByEmail(pool, verifyDTO.email, false)
         if (verifyDTO.checkCode != HashUtils.hashSHA1(user.name)) throw IllegalCodeException("illegal check code")
-        userRepository.updateUser(pool, user.id)
+        userRepository.updateIsEnabled(pool, user.id)
     }
 
     suspend fun signIn(signInDTO: SignInDTO): TokenDTO =

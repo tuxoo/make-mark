@@ -52,7 +52,7 @@ class UserRepository {
             )
         }
 
-    suspend fun updateUser(connection: SuspendingConnection, id: UUID) =
+    suspend fun updateIsEnabled(connection: SuspendingConnection, id: UUID) =
         connection.execute("UPDATE $userTable SET is_enabled=true WHERE id=?", listOf(id.toString()))
 
     suspend fun findByCredentials(connection: SuspendingConnection, email: String, passwordHash: String): UserDTO =
