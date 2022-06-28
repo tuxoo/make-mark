@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono
 @Component
 class JwtAuthenticationManager(
     private val jwtProvider: JwtProvider,
-    private val userDetailsService: MmarkUserDetailsService
+    private val userDetailsService: AppUserDetailsService
 ) : ReactiveAuthenticationManager {
 
     override fun authenticate(authentication: Authentication?): Mono<Authentication> {
@@ -27,7 +27,7 @@ class JwtAuthenticationManager(
     private suspend fun validate(token: BearerToken): Authentication {
         val userId = jwtProvider.getUserIdFromToken(token)
         val user = userDetailsService.findById(userId)
-            .cast(MmarkUserDetails::class.java)
+            .cast(AppUserDetails::class.java)
             .awaitSingleOrNull()
             ?: throw IllegalUserException("illegal user")
 

@@ -6,7 +6,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import java.util.*
 
-class MmarkUserDetails(
+class AppUserDetails(
     private val id: UUID,
     private val login: String,
     private val isEnabled: Boolean,
@@ -17,7 +17,7 @@ class MmarkUserDetails(
         fun toMmarkUserDetails(user: UserDTO) =
             with(user)
             {
-                MmarkUserDetails(
+                AppUserDetails(
                     id = id,
                     login = loginEmail,
                     isEnabled = isEnabled,

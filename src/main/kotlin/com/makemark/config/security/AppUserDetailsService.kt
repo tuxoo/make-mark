@@ -9,7 +9,7 @@ import reactor.core.publisher.Mono
 import java.util.*
 
 @Component
-class MmarkUserDetailsService(
+class AppUserDetailsService(
     private val userService: UserService
 ) : ReactiveUserDetailsService {
 
@@ -17,7 +17,7 @@ class MmarkUserDetailsService(
         mono {
             userService.getByEmail(login!!)
                 .run {
-                    MmarkUserDetails.toMmarkUserDetails(this)
+                    AppUserDetails.toMmarkUserDetails(this)
                 }
         }
     
@@ -25,7 +25,7 @@ class MmarkUserDetailsService(
         mono {
             userService.getById(id)
                 .run {
-                    MmarkUserDetails.toMmarkUserDetails(this)
+                    AppUserDetails.toMmarkUserDetails(this)
                 }
         }
 }

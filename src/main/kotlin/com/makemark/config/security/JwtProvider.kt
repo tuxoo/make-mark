@@ -29,7 +29,7 @@ class JwtProvider(
         UUID.fromString(parser.parseClaimsJws(token.value).body.subject)
 
 
-    fun validateToken(token: BearerToken, userDetails: MmarkUserDetails): Boolean {
+    fun validateToken(token: BearerToken, userDetails: AppUserDetails): Boolean {
         val claims = parser.parseClaimsJws(token.value).body
         val unexpired = claims.expiration.after(Date.from(Instant.now()))
         val userId = UUID.fromString(claims.subject)

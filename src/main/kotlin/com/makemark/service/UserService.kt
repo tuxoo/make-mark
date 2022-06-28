@@ -2,8 +2,8 @@ package com.makemark.service
 
 import com.github.benmanes.caffeine.cache.AsyncCache
 import com.github.jasync.sql.db.SuspendingConnection
+import com.makemark.config.security.AppUserDetails
 import com.makemark.config.security.JwtProvider
-import com.makemark.config.security.MmarkUserDetails
 import com.makemark.extension.getSuspending
 import com.makemark.extension.putSuspending
 import com.makemark.model.dto.*
@@ -53,7 +53,7 @@ class UserService(
         }
 
     suspend fun getUserProfile(principal: Principal): UserDTO {
-        val user = (principal as UsernamePasswordAuthenticationToken).principal as MmarkUserDetails
+        val user = (principal as UsernamePasswordAuthenticationToken).principal as AppUserDetails
         return getById(user.getId())
     }
 
