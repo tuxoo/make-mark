@@ -1,5 +1,6 @@
 package com.makemark.config.security
 
+import com.makemark.model.exception.IllegalUserException
 import com.makemark.model.exception.InvalidBearerToken
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.reactor.mono
@@ -28,7 +29,7 @@ class JwtAuthenticationManager(
         val user = userDetailsService.findById(userId)
             .cast(MmarkUserDetails::class.java)
             .awaitSingleOrNull()
-            ?: error("incorrect user")
+            ?: throw IllegalUserException("illegal user")
 
         if (jwtProvider.validateToken(token, user)) {
             return UsernamePasswordAuthenticationToken(user, "", user.authorities)
