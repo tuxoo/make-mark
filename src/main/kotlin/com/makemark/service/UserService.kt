@@ -9,6 +9,7 @@ import com.makemark.extension.putSuspending
 import com.makemark.model.dto.*
 import com.makemark.model.entity.User
 import com.makemark.model.exception.IllegalCodeException
+import com.makemark.model.exception.UserAlreadyActiveException
 import com.makemark.repository.UserRepository
 import com.makemark.util.HashUtils
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -38,7 +39,8 @@ class UserService(
 
     suspend fun verifyUser(verifyDTO: VerifyDTO) {
         val user = userRepository.findByEmail(pool, verifyDTO.email, false)
-        if (verifyDTO.checkCode != HashUtils.hashSHA1(user.name)) throw IllegalCodeException("illegal code")
+        if (user.isEnabled) throw UserAlreadyActiveException("user already active")
+        if (verifyDTO.checkCode != HashUtils.hashSHA1(user.name)) throw IllegalCodeException("illegal check code")
         userRepository.updateUser(pool, user.id)
     }
 

@@ -74,5 +74,5 @@ class UserRepository {
             "SELECT id, name, login_email, registered_at, visited_at, role, is_enabled FROM $userTable WHERE login_email=? AND is_enabled=?",
             listOf(email, isEnabled),
             userDTOMapper
-        ) ?: throw UserNotFoundException("user not found by email")
+        ) ?: throw UserNotFoundException("unknown user")
 }
