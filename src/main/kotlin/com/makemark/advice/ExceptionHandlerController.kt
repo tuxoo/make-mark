@@ -24,6 +24,7 @@ class ExceptionHandlerController {
     fun handleDatabaseException(e: GenericDatabaseException): ResponseEntity<ErrorResponse> =
         with(e.errorMessage)
         {
+            log.error("Handle exception [{}]", e.message ?: "error without description")
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(
                     ErrorResponse(
@@ -37,6 +38,7 @@ class ExceptionHandlerController {
     fun handleException(e: Exception): ResponseEntity<ErrorResponse> =
         with(e.javaClass.getAnnotation(ResponseStatus::class.java))
         {
+            log.error("Handle exception [{}]", e.message ?: "error without description")
             ResponseEntity.status(this?.code ?: HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(
                     ErrorResponse(
