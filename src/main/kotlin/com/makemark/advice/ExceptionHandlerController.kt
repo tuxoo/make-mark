@@ -39,7 +39,7 @@ class ExceptionHandlerController {
         with(e.javaClass.getAnnotation(ResponseStatus::class.java))
         {
             log.error("Handle exception [{}]", e.message ?: "error without description")
-            ResponseEntity.status(this?.code ?: HttpStatus.INTERNAL_SERVER_ERROR)
+            ResponseEntity.status(this?.value ?: HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(
                     ErrorResponse(
                         message = e.message ?: "error",

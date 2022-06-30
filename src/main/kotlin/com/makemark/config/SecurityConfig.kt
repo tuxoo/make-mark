@@ -36,7 +36,15 @@ class SecurityConfig {
             }
             .and()
             .authorizeExchange()
-            .pathMatchers(HttpMethod.POST, "/api/v1/user/sign-up", "/api/v1/user/verify/**", "/api/v1/user/sign-in")
+            .pathMatchers(
+                HttpMethod.POST,
+                "/api/v1/user/sign-up",
+                "/api/v1/user/verify/**",
+                "/api/v1/user/sign-in",
+                "/actuator/**"
+            )
+            .permitAll()
+            .pathMatchers(HttpMethod.GET, "/actuator/**")
             .permitAll()
             .anyExchange().authenticated()
             .and()

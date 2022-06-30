@@ -1,6 +1,22 @@
 server:
   port: 9000
 
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true
+
 cache:
   user-maximum-size: 100000
   user-expired-time-hours: 4
@@ -15,7 +31,7 @@ postgres:
   max-active-connections: 25
   max-pending-queries: 100000
   max-connection-ttl: 120000
-  max-idle-time: 300
+  max-idle-time: 300000
 
 app:
   url: ${APP_URL}

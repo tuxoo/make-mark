@@ -16,12 +16,13 @@ repositories {
 }
 
 dependencies {
-
     implementation("org.springframework.boot:spring-boot")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springdoc:springdoc-openapi-webflux-core:1.6.9")
     implementation("org.springdoc:springdoc-openapi-webflux-ui:1.6.9")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("io.micrometer:micrometer-registry-prometheus:1.9.1")
     implementation("org.slf4j:slf4j-api:1.7.36")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
