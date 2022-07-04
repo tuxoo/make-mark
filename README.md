@@ -18,6 +18,14 @@ POSTGRES_PASSWORD=[your postgres password here]
 
 LIQUIBASE_VERSION=4.11
 
+GRAFANA_VERSION=9.0.2
+GRAFANA_USER=[your grafana user here]
+GRAFANA_PASSWORD=[your grafana password here]
+GRAFANA_PORT=[your grafana port here]
+
+PROMETHEUS_VERSION=v2.36.2
+PROMETHEUS_PORT=[your prometheus port here]
+
 PASSWORD_SALT=[your salt here]
 JWT_SIGNING_KEY=[your signing key here]
 ```
