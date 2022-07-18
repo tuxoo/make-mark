@@ -8,11 +8,19 @@
 
 For application need EnvFile by Borys Pierov plugin and .env file which contains:
 ```dotenv
+IP_ADDRESS=host.docker.internal
+
+APP_PORT=[your application port here]
+APP_URL=http://localhost:${APP_PORT}
+
+API_PATH=/
+
 POSTGRES_VERSION=14
 POSTGRES_HOST=[your postgres host here]
 POSTGRES_PORT=[your postgres port here]
-POSTGRES_SCHEMA=mmark
 POSTGRES_DB=mmark
+POSTGRES_SCHEMA=mmark
+POSTGRES_URL=jdbc:postgresql://${IP_ADDRESS}:${POSTGRES_PORT}/${POSTGRES_DB}
 POSTGRES_USER=[your postgres user here]
 POSTGRES_PASSWORD=[your postgres password here]
 
@@ -26,7 +34,7 @@ GRAFANA_PORT=[your grafana port here]
 PROMETHEUS_VERSION=v2.36.2
 PROMETHEUS_PORT=[your prometheus port here]
 
-PASSWORD_SALT=[your salt here]
+HASH_SALT=[your salt here]
 JWT_SIGNING_KEY=[your signing key here]
 ```
 

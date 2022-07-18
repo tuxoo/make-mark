@@ -34,7 +34,7 @@ postgres:
   max-idle-time: 300000
 
 app:
-  url: ${APP_URL}
+  url: ${APP_URL:9000}
   api-path: ${API_PATH:/}
   hash-salt: ${HASH_SALT}
   jwt-signing-key: ${JWT_SIGNING_KEY}
