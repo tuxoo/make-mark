@@ -7,6 +7,7 @@
 - CAFFEINE
 
 For application need EnvFile by Borys Pierov plugin and .env file which contains:
+
 ```dotenv
 IP_ADDRESS=host.docker.internal
 
