@@ -19,7 +19,7 @@ management:
 
 cache:
   user-maximum-size: 100000
-  user-expired-time-hours: 4
+  user-expired-time-hours: 4h
 
 postgres:
   url: ${POSTGRES_URL}
@@ -33,9 +33,13 @@ postgres:
   max-connection-ttl: 120000
   max-idle-time: 300000
 
-app:
+application:
   url: ${APP_URL}
   api-path: ${API_PATH:/}
   hash-salt: ${HASH_SALT}
   jwt-signing-key: ${JWT_SIGNING_KEY}
-  token-ttl: ${TOKEN_TTL:4}
+  access-token-ttl: ${ACCESS_TOKEN_TTL:1h}
+  refresh-token-ttl: ${REFRESH_TOKEN_TTL:7d}
+  session:
+    max: ${SESSION_MAX:3}
+    cron-delete: ${SESSION_CRON_DELETE:0 0 * * *}

@@ -7,16 +7,15 @@ import com.makemark.model.dto.UserDTO
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 @Configuration
 class CacheConfig(
-    private val cacheProperty: CacheProperty
+    private val property: CacheProperty
 ) {
 
     @Bean
     fun userCache(): AsyncCache<UUID, UserDTO> = Caffeine.newBuilder()
-        .maximumSize(cacheProperty.userMaximumSize)
-        .expireAfterAccess(cacheProperty.userExpiredTimeHours, TimeUnit.HOURS)
+        .maximumSize(property.userMaximumSize)
+        .expireAfterAccess(property.userExpiredTime)
         .buildAsync()
 }

@@ -5,7 +5,6 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import org.springframework.stereotype.Component
 import java.time.Instant
-import java.time.temporal.ChronoUnit
 import java.util.*
 
 @Component
@@ -17,7 +16,7 @@ class JwtProvider(
     private val parser = Jwts.parserBuilder().setSigningKey(key).build()
     
     fun generateToken(login: String): BearerToken = Jwts.builder()
-        .setExpiration(Date.from(Instant.now().plus(property.tokenTTL, ChronoUnit.HOURS)))
+        .setExpiration(Date.from(Instant.now().plus(property.accessTokenTTL)))
         .setSubject(login)
         .setIssuedAt(Date.from(Instant.now()))
         .signWith(key)
