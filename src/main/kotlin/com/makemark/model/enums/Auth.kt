@@ -1,7 +1,7 @@
 package com.makemark.model.enums
 
 enum class Auth(
-    val meaning: String,
+    val value: String,
     val length: Int
 ) {
     AUTHORIZATION("Authorization", 13),

@@ -1,10 +1,19 @@
 debug: ${SPRING_DEBUG:false}
 server:
   port: 9000
+  forward-headers-strategy: framework
 
 spring:
   application:
     name: make-mark
+
+springdoc:
+  api-docs:
+    groups:
+      enabled: true
+    path: /swagger-ui/v3/api-docs
+  swagger-ui:
+    path: /swagger-ui/swagger-ui.html
 
 cache:
   user-maximum-size: 100000

@@ -1,4 +1,4 @@
-# Backend application MakeMark notes service
+# MakeMark application for making some notes
 
 ###
 - Kotlin
@@ -27,14 +27,6 @@ POSTGRES_PASSWORD=[your postgres password here]
 
 LIQUIBASE_VERSION=4.11
 
-GRAFANA_VERSION=9.0.2
-GRAFANA_USER=[your grafana user here]
-GRAFANA_PASSWORD=[your grafana password here]
-GRAFANA_PORT=[your grafana port here]
-
-PROMETHEUS_VERSION=v2.36.2
-PROMETHEUS_PORT=[your prometheus port here]
-
 HASH_SALT=[your salt here]
 JWT_SIGNING_KEY=[your signing key here]
 ```
@@ -53,9 +45,4 @@ gradle build -x test
 For running application in Docker need to build application and:
 ```dotenv
 docker compose up
-```
-
-Postman collection :
-```dotenv
-./postman/Mmark.postman_collection.json
 ```
