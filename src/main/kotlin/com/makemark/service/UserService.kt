@@ -7,8 +7,8 @@ import com.makemark.config.security.JwtProvider
 import com.makemark.extension.getSuspending
 import com.makemark.extension.putSuspending
 import com.makemark.model.dto.LoginResponse
-import com.makemark.model.dto.SignInDTO
-import com.makemark.model.dto.SignUpDTO
+import com.makemark.model.dto.SignInDto
+import com.makemark.model.dto.SignUpDto
 import com.makemark.model.entity.User
 import com.makemark.repository.UserRepository
 import com.makemark.util.HashUtils
@@ -27,7 +27,7 @@ class UserService(
     private val sessionService: SessionService
 ) {
 
-    suspend fun signUp(signUpDTO: SignUpDTO): Unit =
+    suspend fun signUp(signUpDTO: SignUpDto): Unit =
         userRepository.save(
             pool, User(
                 name = signUpDTO.name,
@@ -38,14 +38,14 @@ class UserService(
             )
         )
 
-    suspend fun signIn(signInDTO: SignInDTO): LoginResponse =
+    suspend fun signIn(signInDTO: SignInDto): LoginResponse =
         userRepository.findByCredentials(
             connection = pool,
             email = signInDTO.email,
             passwordHash = HashUtils.hashSHA1(signInDTO.password)
         ).run {
             userCache.putSuspending(this.id, this)
-            val refreshToken = sessionService.createSession(this)
+            val refreshToken = sessionService.create(this)
             LoginResponse(
                 accessToken = jwtProvider.generateToken(this.id.toString()).value,
                 refreshToken = refreshToken

@@ -17,7 +17,7 @@ class SessionService(
     private val pool: SuspendingConnection,
 ) {
 
-    suspend fun createSession(user: User): UUID =
+    suspend fun create(user: User): UUID =
         with(sessionRepository.findAllByUserId(pool, user.id)) {
             if (size >= sessionProperty.max) {
                 sessionRepository.deleteAllByUserId(pool, user.id)

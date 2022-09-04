@@ -1,6 +1,6 @@
 package com.makemark.model.dto
 
-data class VerifyDTO(
+data class SignInDto(
     val email: String,
-    val checkCode: String
+    val password: String
 )

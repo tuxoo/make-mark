@@ -16,5 +16,4 @@ class JwtServerAuthenticationConverter : ServerAuthenticationConverter {
             .map { it.substring(Auth.BEARER.length) }
             .map { jwt -> BearerToken(jwt) }
     }
-
 }
