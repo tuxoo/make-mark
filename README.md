@@ -46,3 +46,8 @@ For running application in Docker need to build application and:
 ```dotenv
 docker compose up
 ```
+
+Swagger documentation :
+```dotenv
+http://localhost:9000/swagger-ui/swagger-ui.html
+```
