@@ -15,13 +15,14 @@ class SessionRepository {
         const val sessionTable = "session"
     }
 
-    suspend fun save(connection: SuspendingConnection, expiresAt: Instant, userId: UUID): UUID = connection.execute(
-        "INSERT INTO $sessionTable (expires_at, user_id) VALUES (?, ?) returning refresh_token",
-        listOf(
-            Timestamp.from(expiresAt),
-            userId
-        )
-    ).rows[0].getNonNullableUUID("refresh_token")
+    suspend fun save(connection: SuspendingConnection, expiresAt: Instant, userId: UUID): UUID =
+        connection.execute(
+            "INSERT INTO $sessionTable (expires_at, user_id) VALUES (?, ?) returning refresh_token",
+            listOf(
+                Timestamp.from(expiresAt),
+                userId
+            )
+        ).rows[0].getNonNullableUUID("refresh_token")
 
     suspend fun findAllByUserId(connection: SuspendingConnection, userId: UUID): List<Session> =
         connection.selectList(
@@ -33,6 +34,14 @@ class SessionRepository {
                 refreshToken = it.getNonNullableUUID("refresh_token"),
                 expiresAt = it.getNonNullableInstant("expires_at"),
                 userId = it.getNonNullableUUID("user_id")
+            )
+        }
+
+    suspend fun deleteAllByUserId(connection: SuspendingConnection, userId: UUID): Unit =
+        with(userId) {
+            connection.execute(
+                "DELETE FROM $sessionTable WHERE user_id=?",
+                listOf(this)
             )
         }
 }

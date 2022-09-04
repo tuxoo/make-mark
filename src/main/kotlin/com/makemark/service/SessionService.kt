@@ -20,7 +20,7 @@ class SessionService(
     suspend fun createSession(user: User): UUID =
         with(sessionRepository.findAllByUserId(pool, user.id)) {
             if (size >= sessionProperty.max) {
-//                sessionRepository.deleteAll(this)
+                sessionRepository.deleteAllByUserId(pool, user.id)
             }
         }.run {
             sessionRepository.save(
