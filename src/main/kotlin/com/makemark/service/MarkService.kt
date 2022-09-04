@@ -21,6 +21,16 @@ class MarkService(
             markRepository.save(pool, this)
         }
 
+    suspend fun edit(id: Long, markFormDto: MarkFormDto): MarkSlimDto =
+        markRepository.update(pool, id, markFormDto).run {
+            MarkSlimDto(
+                id = this.id!!,
+                title = this.title,
+                text = this.text,
+                createdAt = this.createdAt
+            )
+        }
+
     suspend fun getByDate(year: Int, month: Int, day: Int?): List<MarkSlimDto> =
         markRepository.findByDate(pool, year, month, day)
             .map {
@@ -31,6 +41,9 @@ class MarkService(
                     createdAt = it.createdAt
                 )
             }
+
+    suspend fun delete(id: Long): Unit =
+        markRepository.delete(pool, id)
 
     private suspend fun toMark(markFormDto: MarkFormDto): Mark =
         Instant.now().run {

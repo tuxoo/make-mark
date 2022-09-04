@@ -17,7 +17,7 @@ class SessionRepository {
 
     suspend fun save(connection: SuspendingConnection, expiresAt: Instant, userId: UUID): UUID =
         connection.execute(
-            "INSERT INTO $sessionTable (expires_at, user_id) VALUES (?, ?) returning refresh_token",
+            "INSERT INTO $sessionTable (expires_at, user_id) VALUES (?, ?) RETURNING refresh_token",
             listOf(
                 Timestamp.from(expiresAt),
                 userId

@@ -29,8 +29,8 @@ CREATE TABLE mark
     title     varchar(255) not null,
     text      text         not null,
     year      int          not null,
-    month     int          not null,
-    day       int          not null,
+    month     int          not null constraint month_constraint check ( month <= 12 ),
+    day       int          not null constraint day_constraint check ( month <= 31 ),
     created_at timestamp    not null,
     user_id   uuid         not null
         constraint fk_mark_user_id references "user"
