@@ -21,3 +21,5 @@ fun RowData.getNonNullableInstant(column: String, zoneOffset: ZoneOffset = ZoneO
 fun RowData.getNonNullableBoolean(column: String): Boolean = getBoolean(column) ?: error("failed to get column mean [$column]")
 
 fun RowData.getNonNullableLong(column: String): Long = getLong(column) ?: error("failed to get column mean [$column]")
+
+fun RowData.getNonNullableInt(column: String): Int = getInt(column) ?: error("failed to get column mean [$column]")
