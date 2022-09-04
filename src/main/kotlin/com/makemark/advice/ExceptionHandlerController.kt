@@ -9,17 +9,15 @@ import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
 @ControllerAdvice
 class ExceptionHandlerController {
 
     companion object {
-        private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault())
         private val log = getLogger<ExceptionHandlerController>()
     }
 
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(GenericDatabaseException::class)
     fun handleDatabaseException(e: GenericDatabaseException): ResponseEntity<ErrorResponse> =
         with(e.errorMessage)
@@ -28,8 +26,8 @@ class ExceptionHandlerController {
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(
                     ErrorResponse(
-                        message = this.message ?: "error",
-                        errorTime = formatter.format(Instant.now())
+                        message = this.message ?: "Generic Database error",
+                        errorTime = Instant.now()
                     )
                 )
         }
@@ -43,7 +41,7 @@ class ExceptionHandlerController {
                 .body(
                     ErrorResponse(
                         message = e.message ?: "error",
-                        errorTime = formatter.format(Instant.now())
+                        errorTime = Instant.now()
                     )
                 )
         }

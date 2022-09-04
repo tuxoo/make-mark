@@ -1,8 +1,16 @@
-FROM openjdk:11
+FROM gradle:7.3.1-jdk17 AS TEMP_BUILD_IMAGE
+COPY --chown=gradle:gradle . /home/gradle/src
+WORKDIR /home/gradle/src
+RUN gradle bootJar
 
-WORKDIR /app
-ADD /build/libs/make-mark-0.0.1-SNAPSHOT.jar mmark.jar
+FROM openjdk:17
 
-EXPOSE 9000
+ENV ARTIFACT_NAME="make-mark-0.0.1.jar"
+ENV APP_HOME=/home/gradle/src
 
-ENTRYPOINT ["java", "-jar", "mmark.jar"]
+EXPOSE ${APP_PORT}
+
+WORKDIR $APP_HOME
+COPY --from=TEMP_BUILD_IMAGE /home/gradle/src/build/libs/$ARTIFACT_NAME .
+
+ENTRYPOINT ["java", "-jar", "make-mark-0.0.1.jar"]
