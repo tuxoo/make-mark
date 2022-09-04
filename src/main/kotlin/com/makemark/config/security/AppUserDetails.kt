@@ -1,6 +1,6 @@
 package com.makemark.config.security
 
-import com.makemark.model.dto.UserDTO
+import com.makemark.model.entity.User
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
@@ -14,7 +14,7 @@ class AppUserDetails(
 ) : UserDetails {
 
     companion object {
-        fun toMmarkUserDetails(user: UserDTO) =
+        fun toUserDetails(user: User) =
             with(user)
             {
                 AppUserDetails(

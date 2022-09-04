@@ -1,25 +1,14 @@
+debug: ${SPRING_DEBUG:false}
 server:
   port: 9000
 
-management:
-  endpoint:
-    health:
-      show-details: always
-  endpoints:
-    web:
-      exposure:
-        include: health,prometheus
-  metrics:
-    export:
-      prometheus:
-        enabled: true
-    distribution:
-      percentiles-histogram:
-        "[http.server.requests]": true
+spring:
+  application:
+    name: make-mark
 
 cache:
   user-maximum-size: 100000
-  user-expired-time-hours: 4h
+  user-expired-time: 4h
 
 postgres:
   url: ${POSTGRES_URL}
@@ -39,7 +28,7 @@ application:
   hash-salt: ${HASH_SALT}
   jwt-signing-key: ${JWT_SIGNING_KEY}
   access-token-ttl: ${ACCESS_TOKEN_TTL:1h}
-  refresh-token-ttl: ${REFRESH_TOKEN_TTL:7d}
+  refresh-token-ttl: ${REFRESH_TOKEN_TTL:8h}
   session:
     max: ${SESSION_MAX:3}
     cron-delete: ${SESSION_CRON_DELETE:0 0 * * *}

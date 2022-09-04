@@ -6,6 +6,5 @@ import org.springframework.boot.context.properties.ConstructorBinding
 @ConstructorBinding
 @ConfigurationProperties(prefix = "application.session")
 data class SessionProperty(
-    val max: Int,
-) {
-}
+    val max: Int
+)

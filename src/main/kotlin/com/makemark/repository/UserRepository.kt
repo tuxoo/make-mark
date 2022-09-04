@@ -3,7 +3,6 @@ package com.makemark.repository
 import com.github.jasync.sql.db.RowData
 import com.github.jasync.sql.db.SuspendingConnection
 import com.makemark.extension.*
-import com.makemark.model.dto.UserDTO
 import com.makemark.model.entity.User
 import com.makemark.model.enums.Role
 import com.makemark.model.exception.UserNotFoundException
@@ -18,22 +17,16 @@ class UserRepository {
         const val userTable = "\"user\""
     }
 
-    private val userDTOMapper: (RowData) -> UserDTO = {
-        val id = it.getNonNullableUUID("id")
-        val name = it.getNonNullableString("name")
-        val loginEmail = it.getNonNullableString("login_email")
-        val registeredAt = it.getNonNullableInstant("registered_at")
-        val visitedAt = it.getNonNullableInstant("visited_at")
-        val role = it.getNonNullableString("role").run { Role.valueOf(this) }
-        val isEnabled = it.getNonNullableBoolean("is_enabled")
-        UserDTO(
-            id = id,
-            name = name,
-            loginEmail = loginEmail,
-            registeredAt = registeredAt,
-            visitedAt = visitedAt,
-            role = role,
-            isEnabled = isEnabled
+    private val userMapper: (RowData) -> User = {
+        User(
+            id = it.getNonNullableUUID("id"),
+            name = it.getNonNullableString("name"),
+            loginEmail = it.getNonNullableString("login_email"),
+            passwordHash = it.getNonNullableString("password_hash"),
+            registeredAt = it.getNonNullableInstant("registered_at"),
+            visitedAt = it.getNonNullableInstant("visited_at"),
+            role = it.getNonNullableString("role").run { Role.valueOf(this) },
+            isEnabled = it.getNonNullableBoolean("is_enabled")
         )
     }
 
@@ -55,24 +48,24 @@ class UserRepository {
     suspend fun updateIsEnabled(connection: SuspendingConnection, id: UUID) =
         connection.execute("UPDATE $userTable SET is_enabled=true WHERE id=?", listOf(id.toString()))
 
-    suspend fun findByCredentials(connection: SuspendingConnection, email: String, passwordHash: String): UserDTO =
+    suspend fun findByCredentials(connection: SuspendingConnection, email: String, passwordHash: String): User =
         connection.select(
-            "SELECT id, name, login_email, registered_at, visited_at, role, is_enabled FROM $userTable WHERE is_enabled=true AND login_email=? AND password_hash=?",
+            "SELECT id, name, login_email, password_hash, registered_at, visited_at, role, is_enabled FROM $userTable WHERE is_enabled=true AND login_email=? AND password_hash=?",
             listOf(email, passwordHash),
-            userDTOMapper
+            userMapper
         ) ?: throw UserNotFoundException("user not found by credentials")
 
-    suspend fun findById(connection: SuspendingConnection, id: UUID, isEnabled: Boolean): UserDTO =
+    suspend fun findById(connection: SuspendingConnection, id: UUID, isEnabled: Boolean): User =
         connection.select(
-            "SELECT id, name, login_email, registered_at, visited_at, role, is_enabled FROM $userTable WHERE id=? AND is_enabled=?",
+            "SELECT id, name, login_email, password_hash, registered_at, visited_at, role, is_enabled FROM $userTable WHERE id=? AND is_enabled=?",
             listOf(id, isEnabled),
-            userDTOMapper
+            userMapper
         ) ?: throw UserNotFoundException("user not found by id")
 
-    suspend fun findByEmail(connection: SuspendingConnection, email: String, isEnabled: Boolean = true): UserDTO =
+    suspend fun findByEmail(connection: SuspendingConnection, email: String, isEnabled: Boolean = true): User =
         connection.select(
-            "SELECT id, name, login_email, registered_at, visited_at, role, is_enabled FROM $userTable WHERE login_email=? AND is_enabled=?",
+            "SELECT id, name, login_email, password_hash, registered_at, visited_at, role, is_enabled FROM $userTable WHERE login_email=? AND is_enabled=?",
             listOf(email, isEnabled),
-            userDTOMapper
+            userMapper
         ) ?: throw UserNotFoundException("unknown user")
 }

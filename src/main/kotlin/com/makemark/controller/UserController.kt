@@ -2,8 +2,8 @@ package com.makemark.controller
 
 import com.makemark.model.dto.SignInDTO
 import com.makemark.model.dto.SignUpDTO
-import com.makemark.model.dto.TokenDTO
-import com.makemark.model.dto.UserDTO
+import com.makemark.model.dto.LoginResponse
+import com.makemark.model.entity.User
 import com.makemark.service.UserService
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -23,16 +23,16 @@ class UserController(
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/sign-in")
-    suspend fun signIn(@RequestBody signInDTO: SignInDTO): TokenDTO =
+    suspend fun signIn(@RequestBody signInDTO: SignInDTO): LoginResponse =
         userService.signIn(signInDTO)
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/profile")
-    suspend fun getUserProfile(@AuthenticationPrincipal principal: Principal): UserDTO =
+    suspend fun getUserProfile(@AuthenticationPrincipal principal: Principal): User =
         userService.getUserProfile(principal)
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{email}")
-    suspend fun getUserByEmail(@PathVariable email: String): UserDTO =
+    suspend fun getUserByEmail(@PathVariable email: String): User =
         userService.getByEmail(email)
 }

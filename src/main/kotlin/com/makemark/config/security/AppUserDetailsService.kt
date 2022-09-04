@@ -17,7 +17,7 @@ class AppUserDetailsService(
         mono {
             userService.getByEmail(login!!)
                 .run {
-                    AppUserDetails.toMmarkUserDetails(this)
+                    AppUserDetails.toUserDetails(this)
                 }
         }
     
@@ -25,7 +25,7 @@ class AppUserDetailsService(
         mono {
             userService.getById(id)
                 .run {
-                    AppUserDetails.toMmarkUserDetails(this)
+                    AppUserDetails.toUserDetails(this)
                 }
         }
 }
