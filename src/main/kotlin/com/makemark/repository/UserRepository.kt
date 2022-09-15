@@ -34,7 +34,7 @@ class UserRepository {
     suspend fun save(connection: SuspendingConnection, user: User): Unit =
         with(user) {
             connection.execute(
-                "INSERT INTO $userTable (first_name, last_name, email, password_hash, registered_at, visited_at, role) VALUES (?, ?, ?, ?, ?, ?)",
+                "INSERT INTO $userTable (first_name, last_name, email, password_hash, registered_at, visited_at, role) VALUES (?, ?, ?, ?, ?, ?, ?)",
                 listOf(
                     firstName,
                     lastName,

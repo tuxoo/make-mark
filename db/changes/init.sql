@@ -10,7 +10,7 @@ CREATE TABLE "user"
     registered_at timestamp           not null,
     visited_at    timestamp           not null,
     role          varchar(255) default 'USER',
-    is_enabled    boolean      default false
+    is_enabled    boolean      default true
 );
 
 CREATE TABLE session

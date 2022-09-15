@@ -13,5 +13,5 @@ data class User(
     val registeredAt: Instant,
     val visitedAt: Instant,
     val role: Role = Role.USER,
-    val isEnabled: Boolean = true
+    val isEnabled: Boolean = false
 )
