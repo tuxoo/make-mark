@@ -9,6 +9,7 @@ import com.makemark.extension.putSuspending
 import com.makemark.model.dto.LoginResponse
 import com.makemark.model.dto.SignInDto
 import com.makemark.model.dto.SignUpDto
+import com.makemark.model.dto.UserDto
 import com.makemark.model.entity.User
 import com.makemark.repository.UserRepository
 import com.makemark.util.HashUtils
@@ -30,8 +31,9 @@ class UserService(
     suspend fun signUp(signUpDTO: SignUpDto): Unit =
         userRepository.save(
             pool, User(
-                name = signUpDTO.name,
-                loginEmail = signUpDTO.email,
+                firstName = signUpDTO.firstName,
+                lastName = signUpDTO.lastName,
+                email = signUpDTO.email,
                 passwordHash = HashUtils.hashSHA1(signUpDTO.password),
                 registeredAt = Instant.now(),
                 visitedAt = Instant.now()
@@ -48,7 +50,13 @@ class UserService(
             val refreshToken = sessionService.create(this)
             LoginResponse(
                 accessToken = jwtProvider.generateToken(this.id.toString()).value,
-                refreshToken = refreshToken
+                refreshToken = refreshToken,
+                user = UserDto(
+                    firstName = this.firstName,
+                    lastName = this.lastName,
+                    email = this.email,
+                    registeredAt = this.registeredAt
+                )
             )
         }
 

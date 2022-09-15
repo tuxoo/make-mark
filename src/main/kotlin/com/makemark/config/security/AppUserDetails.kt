@@ -19,7 +19,7 @@ class AppUserDetails(
             {
                 AppUserDetails(
                     id = id,
-                    login = loginEmail,
+                    login = email,
                     isEnabled = isEnabled,
                     grantedAuthorities = mutableListOf(SimpleGrantedAuthority(user.role.name))
                 )
