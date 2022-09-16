@@ -16,10 +16,15 @@ class MarkService(
     private val markRepository: MarkRepository
 ) {
 
-    suspend fun create(markFormDto: MarkFormDto): Unit =
+    suspend fun create(markFormDto: MarkFormDto): MarkSlimDto =
         toMark(markFormDto).run {
             markRepository.save(pool, this)
-        }
+        }.run { MarkSlimDto(
+            id = this.id!!,
+            title = this.title,
+            text = this.text,
+            createdAt = this.createdAt
+        ) }
 
     suspend fun edit(id: Long, markFormDto: MarkFormDto): MarkSlimDto =
         markRepository.update(pool, id, markFormDto).run {
@@ -42,7 +47,7 @@ class MarkService(
                 )
             }
 
-    suspend fun delete(id: Long): Unit =
+    suspend fun delete(id: Long): Long =
         markRepository.delete(pool, id)
 
     private suspend fun toMark(markFormDto: MarkFormDto): Mark =

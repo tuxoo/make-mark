@@ -1,9 +1,11 @@
 package com.makemark.repository
 
+import com.github.jasync.sql.db.ResultSet
 import com.github.jasync.sql.db.SuspendingConnection
 import com.makemark.extension.*
 import com.makemark.model.dto.MarkFormDto
 import com.makemark.model.entity.Mark
+import com.makemark.model.exception.MarkNotFoundException
 import org.springframework.stereotype.Repository
 import java.sql.Timestamp
 
@@ -14,38 +16,38 @@ class MarkRepository {
         const val markTable = "mark"
     }
 
-    suspend fun save(connection: SuspendingConnection, mark: Mark): Unit =
-        with(mark) {
-            connection.execute(
-                "INSERT INTO $markTable (title, text, year, month, day, created_at, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                listOf(
-                    title,
-                    text,
-                    year,
-                    month,
-                    day,
-                    Timestamp.from(createdAt),
-                    userId
-                )
+    private val markMapper: (ResultSet) -> Mark = {
+        Mark(
+            id = it[0].getNonNullableLong("id"),
+            title = it[0].getNonNullableString("title"),
+            text = it[0].getNonNullableString("text"),
+            year = it[0].getNonNullableInt("year"),
+            month = it[0].getNonNullableInt("month"),
+            day = it[0].getNonNullableInt("day"),
+            createdAt = it[0].getNonNullableInstant("created_at"),
+            userId = it[0].getNonNullableUUID("user_id")
+        )
+    }
+
+    suspend fun save(connection: SuspendingConnection, mark: Mark): Mark =
+        connection.execute(
+            "INSERT INTO $markTable (title, text, year, month, day, created_at, user_id) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING *",
+            listOf(
+                mark.title,
+                mark.text,
+                mark.year,
+                mark.month,
+                mark.day,
+                Timestamp.from(mark.createdAt),
+                mark.userId
             )
-        }
+        ).rows.run(markMapper)
 
     suspend fun update(connection: SuspendingConnection, id: Long, formDto: MarkFormDto): Mark =
         connection.execute(
             "UPDATE $markTable SET title=?, text=? WHERE id=? RETURNING *",
             listOf(formDto.title, formDto.text, id)
-        ).rows.run {
-            Mark(
-                id = this[0].getNonNullableLong("id"),
-                title = this[0].getNonNullableString("title"),
-                text = this[0].getNonNullableString("text"),
-                year = this[0].getNonNullableInt("year"),
-                month = this[0].getNonNullableInt("month"),
-                day = this[0].getNonNullableInt("day"),
-                createdAt = this[0].getNonNullableInstant("created_at"),
-                userId = this[0].getNonNullableUUID("user_id")
-            )
-        }
+        ).rows.run(markMapper)
 
     suspend fun findByDate(connection: SuspendingConnection, year: Int, month: Int, day: Int?): List<Mark> =
         connection.selectList(
@@ -64,11 +66,12 @@ class MarkRepository {
             )
         }
 
-    suspend fun delete(connection: SuspendingConnection, id: Long): Unit =
-        with(id) {
-            connection.execute(
-                "DELETE FROM $markTable WHERE id=?",
-                listOf(this)
-            )
-        }
+    suspend fun delete(connection: SuspendingConnection, id: Long): Long =
+        connection.execute(
+            "DELETE FROM $markTable WHERE id=? RETURNING id",
+            listOf(id)
+        ).rows.takeIf { it.size > 0 }
+            .run {
+                this?.get(0)?.getNonNullableLong("id") ?: throw MarkNotFoundException("Mark not found by id [${id}]")
+            }
 }

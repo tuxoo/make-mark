@@ -21,8 +21,7 @@ class UserController(
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Sign up", description = "This method registers a new user")
     @PostMapping("/sign-up")
-    suspend fun signUp(
-        @RequestBody signUpDTO: SignUpDto): Unit =
+    suspend fun signUp(@RequestBody signUpDTO: SignUpDto): Unit =
         userService.signUp(signUpDTO)
 
     @ResponseStatus(HttpStatus.OK)
