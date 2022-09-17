@@ -13,5 +13,5 @@ data class Session(
     val refreshToken: UUID = UUID.randomUUID(),
     val expiresAt: Instant,
 
-    val userId: ObjectId
+    val userId: String
 )

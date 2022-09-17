@@ -1,9 +1,15 @@
 package com.makemark.model.entity
 
+import nonapi.io.github.classgraph.json.Id
+import org.bson.types.ObjectId
+import org.springframework.data.mongodb.core.mapping.Document
 import java.time.Instant
 
+@Document("mark")
 data class Mark(
-    val id: Long? = null,
+    @Id
+    val id: ObjectId = ObjectId.get(),
+
     val title: String,
     val text: String,
     val year: Int,
@@ -11,5 +17,5 @@ data class Mark(
     val day: Int,
     val createdAt: Instant,
 
-    val userId: String
+    val userId: ObjectId
 )
