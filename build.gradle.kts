@@ -17,6 +17,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
     implementation("org.springdoc:springdoc-openapi-webflux-core:1.6.11")
     implementation("org.springdoc:springdoc-openapi-webflux-ui:1.6.11")
     implementation("org.slf4j:slf4j-api:1.7.36")

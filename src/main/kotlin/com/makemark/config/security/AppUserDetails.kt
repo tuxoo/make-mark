@@ -4,10 +4,9 @@ import com.makemark.model.entity.User
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
-import java.util.*
 
 class AppUserDetails(
-    private val id: UUID,
+    private val id: String,
     private val login: String,
     private val isEnabled: Boolean,
     private val grantedAuthorities: MutableCollection<out GrantedAuthority>
@@ -18,7 +17,7 @@ class AppUserDetails(
             with(user)
             {
                 AppUserDetails(
-                    id = id,
+                    id = id.toString(),
                     login = email,
                     isEnabled = isEnabled,
                     grantedAuthorities = mutableListOf(SimpleGrantedAuthority(user.role.name))
@@ -26,7 +25,7 @@ class AppUserDetails(
             }
     }
 
-    fun getId(): UUID = id
+    fun getId(): String = id
 
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> = grantedAuthorities
 

@@ -4,16 +4,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConstructorBinding
 
 @ConstructorBinding
-@ConfigurationProperties(prefix = "postgres")
-data class PostgresProperty(
-    val url: String,
+@ConfigurationProperties(prefix = "spring.data.mongodb")
+data class MongoProperty(
     val host: String,
     val port: Int,
-    val db: String,
-    val username: String,
+    val userName: String,
     val password: String,
-    val maxActiveConnections: Int,
-    val maxPendingQueries: Int,
-    val maxConnectionTtl: Long,
-    val maxIdleTime: Long
+    val database: String
 )

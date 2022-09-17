@@ -1,10 +1,12 @@
 package com.makemark.service
 
-import com.github.jasync.sql.db.SuspendingConnection
 import com.makemark.config.property.ApplicationProperty
 import com.makemark.config.property.SessionProperty
+import com.makemark.model.entity.Session
 import com.makemark.model.entity.User
 import com.makemark.repository.SessionRepository
+import kotlinx.coroutines.reactive.awaitLast
+import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.stereotype.Service
 import java.time.Instant
 import java.util.*
@@ -14,19 +16,24 @@ class SessionService(
     private val applicationProperty: ApplicationProperty,
     private val sessionProperty: SessionProperty,
     private val sessionRepository: SessionRepository,
-    private val pool: SuspendingConnection,
 ) {
 
     suspend fun create(user: User): UUID =
-        with(sessionRepository.findAllByUserId(pool, user.id)) {
+        with(getAllByUserOrThrow(user)) {
             if (size >= sessionProperty.max) {
-                sessionRepository.deleteAllByUserId(pool, user.id)
+                sessionRepository.deleteAll(this).block()
             }
         }.run {
             sessionRepository.save(
-                connection = pool,
-                expiresAt = Instant.now().plus(applicationProperty.refreshTokenTTL),
-                userId = user.id
-            )
+                Session(
+                    user = user,
+                    expiresAt = Instant.now().plus(applicationProperty.refreshTokenTTL)
+                )
+            ).awaitSingle().refreshToken
         }
+
+    suspend fun getAllByUserOrThrow(user: User): List<Session> =
+        sessionRepository.findAllByUser(user)
+            .collectList()
+            .awaitLast()
 }

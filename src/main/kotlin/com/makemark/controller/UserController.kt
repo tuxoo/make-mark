@@ -3,14 +3,13 @@ package com.makemark.controller
 import com.makemark.model.dto.LoginResponse
 import com.makemark.model.dto.SignInDto
 import com.makemark.model.dto.SignUpDto
+import com.makemark.model.dto.UserDto
 import com.makemark.model.entity.User
 import com.makemark.service.UserService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import org.springframework.http.HttpStatus
-import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
-import java.security.Principal
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -34,13 +33,13 @@ class UserController(
     @SecurityRequirement(name = "Bearer")
     @Operation(summary = "Get user profile", description = "This method gets the user profile")
     @GetMapping("/profile")
-    suspend fun getUserProfile(@AuthenticationPrincipal principal: Principal): User =
-        userService.getUserProfile(principal)
+    suspend fun getUserProfile(): UserDto =
+        userService.getUserProfile()
 
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "Bearer")
     @Operation(summary = "Get user by email", description = "This method gets the user by the email")
-    @GetMapping("/{email}")
-    suspend fun getUserByEmail(@PathVariable email: String): User =
+    @GetMapping("/email/{email}")
+    suspend fun getUserByEmail(@PathVariable email: String): UserDto =
         userService.getByEmail(email)
 }

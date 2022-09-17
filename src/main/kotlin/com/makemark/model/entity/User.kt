@@ -1,17 +1,31 @@
 package com.makemark.model.entity
 
 import com.makemark.model.enums.Role
+import org.bson.types.ObjectId
+import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.index.Indexed
+import org.springframework.data.mongodb.core.mapping.Document
 import java.time.Instant
-import java.util.*
 
+@Document("user")
 data class User(
-    val id: UUID = UUID.randomUUID(),
+    @Id
+    val id: ObjectId = ObjectId.get(),
+
     val firstName: String,
+
     val lastName: String,
+
+    @Indexed(unique = true)
     val email: String,
-    val passwordHash: String,
-    val registeredAt: Instant,
-    val visitedAt: Instant,
+
+    val passwordHash: String? = null,
+
+    val registeredAt: Instant = Instant.now(),
+
+    val visitedAt: Instant = Instant.now(),
+
     val role: Role = Role.USER,
-    val isEnabled: Boolean = false
+
+    val isEnabled: Boolean = false,
 )

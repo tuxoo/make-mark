@@ -1,75 +1,98 @@
 package com.makemark.service
 
 import com.github.benmanes.caffeine.cache.AsyncCache
-import com.github.jasync.sql.db.SuspendingConnection
-import com.makemark.config.security.AppUserDetails
 import com.makemark.config.security.JwtProvider
 import com.makemark.extension.getSuspending
 import com.makemark.extension.putSuspending
+import com.makemark.helper.AuthAwareHelper
 import com.makemark.model.dto.LoginResponse
 import com.makemark.model.dto.SignInDto
 import com.makemark.model.dto.SignUpDto
 import com.makemark.model.dto.UserDto
 import com.makemark.model.entity.User
+import com.makemark.model.exception.UserNotFoundException
 import com.makemark.repository.UserRepository
 import com.makemark.util.HashUtils
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.stereotype.Service
-import java.security.Principal
-import java.time.Instant
-import java.util.*
+import reactor.core.publisher.Mono
 
 @Service
 class UserService(
-    private val pool: SuspendingConnection,
-    private val userCache: AsyncCache<UUID, User>,
-    private val userRepository: UserRepository,
+    private val userCache: AsyncCache<String, User>,
     private val jwtProvider: JwtProvider,
-    private val sessionService: SessionService
+    private val sessionService: SessionService,
+    private val userRepository: UserRepository
 ) {
 
     suspend fun signUp(signUpDTO: SignUpDto): Unit =
-        userRepository.save(
-            pool, User(
-                firstName = signUpDTO.firstName,
-                lastName = signUpDTO.lastName,
-                email = signUpDTO.email,
-                passwordHash = HashUtils.hashSHA1(signUpDTO.password),
-                registeredAt = Instant.now(),
-                visitedAt = Instant.now()
-            )
-        )
+        with(signUpDTO) {
+            userRepository.save(
+                User(
+                    firstName = firstName,
+                    lastName = lastName,
+                    email = email,
+                    passwordHash = HashUtils.hashSHA1(password)
+                )
+            ).awaitSingle()
+        }
 
     suspend fun signIn(signInDTO: SignInDto): LoginResponse =
-        userRepository.findByCredentials(
-            connection = pool,
-            email = signInDTO.email,
-            passwordHash = HashUtils.hashSHA1(signInDTO.password)
-        ).run {
-            userCache.putSuspending(this.id, this)
-            val refreshToken = sessionService.create(this)
-            LoginResponse(
-                accessToken = jwtProvider.generateToken(this.id.toString()).value,
-                refreshToken = refreshToken,
-                user = UserDto(
-                    firstName = this.firstName,
-                    lastName = this.lastName,
-                    email = this.email,
-                    registeredAt = this.registeredAt
+        getByCredentials(signInDTO.email, HashUtils.hashSHA1(signInDTO.password))
+            .run {
+                userCache.putSuspending(this.id.toString(), this)
+                val refreshToken = sessionService.create(this)
+                LoginResponse(
+                    accessToken = jwtProvider.generateToken(this.id.toString()).value,
+                    refreshToken = refreshToken,
+                    user = UserDto(
+                        firstName = this.firstName,
+                        lastName = this.lastName,
+                        email = this.email,
+                        registeredAt = this.registeredAt
+                    )
                 )
+            }
+
+    suspend fun getByCredentials(email: String, passwordHash: String): User =
+        userRepository.findByEmailAndPasswordHash(
+            email,
+            passwordHash
+        ).switchIfEmpty(Mono.error(UserNotFoundException("User not found by credentials")))
+            .awaitSingle()
+
+    suspend fun getUserProfile(): UserDto =
+        with(AuthAwareHelper.getCurrentUserDetails()) {
+            getById(getId())
+        }.run {
+            UserDto(
+                firstName = firstName,
+                lastName = lastName,
+                email = email,
+                registeredAt = registeredAt
             )
         }
 
-    suspend fun getUserProfile(principal: Principal): User {
-        val user = (principal as UsernamePasswordAuthenticationToken).principal as AppUserDetails
-        return getById(user.getId())
-    }
-
-    suspend fun getById(id: UUID, isEnabled: Boolean = true): User =
+    suspend fun getById(id: String): User =
         userCache.getSuspending(id) {
-            userRepository.findById(pool, id, isEnabled)
+            userRepository.findById(id)
+                .switchIfEmpty(Mono.error(UserNotFoundException("User not found by id [$id]")))
+                .awaitSingle()
         }
 
-    suspend fun getByEmail(email: String): User =
-        userRepository.findByEmail(pool, email)
+    suspend fun getByEmailOrThrow(email: String): User =
+        userRepository.findByEmail(email)
+            .switchIfEmpty(Mono.error(UserNotFoundException("User not found by credentials")))
+            .awaitSingle()
+
+    suspend fun getByEmail(email: String): UserDto =
+        getByEmailOrThrow(email)
+            .run {
+                UserDto(
+                    firstName = firstName,
+                    lastName = lastName,
+                    email = email,
+                    registeredAt = registeredAt
+                )
+            }
 }

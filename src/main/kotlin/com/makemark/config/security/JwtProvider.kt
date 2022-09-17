@@ -24,13 +24,13 @@ class JwtProvider(
             BearerToken(this.compact())
         }
 
-    fun getUserIdFromToken(token: BearerToken): UUID =
-        UUID.fromString(parser.parseClaimsJws(token.value).body.subject)
+    fun getUserIdFromToken(token: BearerToken): String =
+        parser.parseClaimsJws(token.value).body.subject
 
     fun validateToken(token: BearerToken, userDetails: AppUserDetails): Boolean {
         val claims = parser.parseClaimsJws(token.value).body
         val unexpired = claims.expiration.after(Date.from(Instant.now()))
-        val userId = UUID.fromString(claims.subject)
+        val userId = claims.subject
 
         return unexpired && (userId == userDetails.getId())
     }
