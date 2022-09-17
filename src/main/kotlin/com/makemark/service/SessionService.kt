@@ -7,6 +7,7 @@ import com.makemark.model.entity.User
 import com.makemark.repository.SessionRepository
 import kotlinx.coroutines.reactive.awaitLast
 import kotlinx.coroutines.reactive.awaitSingle
+import org.bson.types.ObjectId
 import org.springframework.stereotype.Service
 import java.time.Instant
 import java.util.*
@@ -19,21 +20,21 @@ class SessionService(
 ) {
 
     suspend fun create(user: User): UUID =
-        with(getAllByUserOrThrow(user)) {
+        with(getAllByUserIdOrThrow(user.id)) {
             if (size >= sessionProperty.max) {
                 sessionRepository.deleteAll(this).block()
             }
         }.run {
             sessionRepository.save(
                 Session(
-                    user = user,
+                    userId = user.id,
                     expiresAt = Instant.now().plus(applicationProperty.refreshTokenTTL)
                 )
             ).awaitSingle().refreshToken
         }
 
-    suspend fun getAllByUserOrThrow(user: User): List<Session> =
-        sessionRepository.findAllByUser(user)
+    suspend fun getAllByUserIdOrThrow(userId: ObjectId): List<Session> =
+        sessionRepository.findAllByUserId(userId)
             .collectList()
             .awaitLast()
 }
