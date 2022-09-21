@@ -10,6 +10,9 @@ import com.makemark.util.DateTimeUtil
 import kotlinx.coroutines.reactive.awaitLast
 import kotlinx.coroutines.reactor.awaitSingle
 import org.bson.types.ObjectId
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate
 import org.springframework.data.mongodb.core.query
 import org.springframework.stereotype.Service
@@ -62,16 +65,26 @@ class MarkService(
             .switchIfEmpty(Mono.error(MarkNotFoundException("Mark not found by id [$id]")))
             .awaitSingle()
 
-    suspend fun getByDate(year: Int, month: Int, day: Int?): List<MarkSlimDto> =
-        if (day == null) {
-            with(getCurrentUserDetails().getId()) {
-                markRepository.findAllByUserIdAndYearAndMonth(ObjectId(this), year, month)
-            }
-        } else {
-            with(getCurrentUserDetails().getId()) {
-                markRepository.findAllByUserIdAndYearAndMonthAndDay(ObjectId(this), year, month, day)
-            }
+    suspend fun getDaily(year: Int, month: Int, day: Int): List<MarkSlimDto> =
+        with(getCurrentUserDetails().getId()) {
+            markRepository.findAllByUserIdAndYearAndMonthAndDay(ObjectId(this), year, month, day)
         }.collectList()
+            .awaitLast()
+            .map {
+                MarkSlimDto(
+                    id = it.id.toString(),
+                    title = it.title,
+                    text = it.text,
+                    createdAt = it.createdAt
+                )
+            }
+
+    suspend fun getMonthly(year: Int, month: Int, pageable: Pageable): Page<MarkSlimDto> =
+        with(getCurrentUserDetails().getId()) {
+            markRepository.findAllByUserIdAndYearAndMonth(ObjectId(this), year, month, pageable)
+        }.collectList()
+            .zipWith(markRepository.count())
+            .map { m -> PageImpl(m.t1, pageable, m.t2) }
             .awaitLast()
             .map {
                 MarkSlimDto(
@@ -89,8 +102,7 @@ class MarkService(
         }
 
     suspend fun fetchYears(): MutableList<Int>? =
-        mongoTemplate
-            .query<Mark>().distinct("year").`as`(Int::class.java).all().collectList().awaitLast()
+        mongoTemplate.query<Mark>().distinct("year").`as`(Int::class.java).all().collectList().awaitLast()
 
     private suspend fun toMark(markFormDto: MarkFormDto): Mark =
         Instant.now().run {

@@ -8,7 +8,7 @@ object DateTimeUtil {
 
     fun getYear(now: Instant): Int = LocalDate.ofInstant(now, ZoneId.systemDefault()).year
 
-    fun getMonth(now: Instant): Int = LocalDate.ofInstant(now, ZoneId.systemDefault()).monthValue
+    fun getMonth(now: Instant): Int = LocalDate.ofInstant(now, ZoneId.systemDefault()).monthValue - 1
 
     fun getDay(now: Instant): Int = LocalDate.ofInstant(now, ZoneId.systemDefault()).dayOfMonth
 }
