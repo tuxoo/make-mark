@@ -10,13 +10,16 @@ import com.makemark.util.DateTimeUtil
 import kotlinx.coroutines.reactive.awaitLast
 import kotlinx.coroutines.reactor.awaitSingle
 import org.bson.types.ObjectId
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate
+import org.springframework.data.mongodb.core.query
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import java.time.Instant
 
 @Service
 class MarkService(
-    private val markRepository: MarkRepository
+    private val markRepository: MarkRepository,
+    private val mongoTemplate: ReactiveMongoTemplate,
 ) {
 
     suspend fun create(markFormDto: MarkFormDto): MarkSlimDto =
@@ -61,9 +64,13 @@ class MarkService(
 
     suspend fun getByDate(year: Int, month: Int, day: Int?): List<MarkSlimDto> =
         if (day == null) {
-            markRepository.findAllByYearAndMonth(year, month)
+            with(getCurrentUserDetails().getId()) {
+                markRepository.findAllByUserIdAndYearAndMonth(ObjectId(this), year, month)
+            }
         } else {
-            markRepository.findAllByYearAndMonthAndDay(year, month, day)
+            with(getCurrentUserDetails().getId()) {
+                markRepository.findAllByUserIdAndYearAndMonthAndDay(ObjectId(this), year, month, day)
+            }
         }.collectList()
             .awaitLast()
             .map {
@@ -80,6 +87,10 @@ class MarkService(
             markRepository.delete(this).block()
             id
         }
+
+    suspend fun fetchYears(): MutableList<Int>? =
+        mongoTemplate
+            .query<Mark>().distinct("year").`as`(Int::class.java).all().collectList().awaitLast()
 
     private suspend fun toMark(markFormDto: MarkFormDto): Mark =
         Instant.now().run {

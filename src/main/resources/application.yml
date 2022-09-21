@@ -1,6 +1,6 @@
 debug: ${SPRING_DEBUG:false}
 server:
-  port: 9000
+  port: ${APP_PORT:8080}
   forward-headers-strategy: framework
 
 spring:
@@ -25,18 +25,6 @@ springdoc:
 cache:
   user-maximum-size: 100000
   user-expired-time: 4h
-
-postgres:
-  url: ${POSTGRES_URL}
-  host: ${POSTGRES_HOST}
-  port: ${POSTGRES_PORT}
-  db: ${POSTGRES_DB}
-  username: ${POSTGRES_USER}
-  password: ${POSTGRES_PASSWORD}
-  max-active-connections: 25
-  max-pending-queries: 100000
-  max-connection-ttl: 120000
-  max-idle-time: 300000
 
 application:
   url: ${APP_URL}
