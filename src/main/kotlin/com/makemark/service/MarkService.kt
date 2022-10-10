@@ -97,7 +97,7 @@ class MarkService(
 
     suspend fun delete(id: String): String =
         getByIdOrThrow(id).run {
-            markRepository.delete(this).block()
+            markRepository.delete(this).then().subscribe()
             id
         }
 

@@ -16,7 +16,6 @@ suspend fun <K : Any, V : Any?> AsyncCache<K, V>.getSuspending(
     }.await()
 }
 
-
 suspend fun <K : Any, V : Any?> AsyncCache<K, V>.putSuspending(
     key: K,
     value: V
@@ -24,5 +23,11 @@ suspend fun <K : Any, V : Any?> AsyncCache<K, V>.putSuspending(
     this@putSuspending.put(key,
         future(coroutineContext) { value }
     )
+}
+
+suspend fun <K : Any, V : Any?> AsyncCache<K, V>.invalidateSuspending(
+    key: K
+): Unit = coroutineScope {
+    this@invalidateSuspending.asMap().remove(key)
 }
 

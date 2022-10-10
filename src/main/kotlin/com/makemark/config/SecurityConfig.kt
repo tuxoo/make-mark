@@ -18,6 +18,7 @@ class SecurityConfig {
     val permittedUris = listOf(
         "/api/v1/users/sign-up",
         "/api/v1/users/sign-in",
+        "/api/v1/users/token/refresh/**",
         "/actuator/**",
         "**/swagger-ui/**",
         "**/v3/api-docs/**",

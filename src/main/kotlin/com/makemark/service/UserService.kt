@@ -3,12 +3,10 @@ package com.makemark.service
 import com.github.benmanes.caffeine.cache.AsyncCache
 import com.makemark.config.security.JwtProvider
 import com.makemark.extension.getSuspending
+import com.makemark.extension.invalidateSuspending
 import com.makemark.extension.putSuspending
 import com.makemark.helper.AuthAwareHelper
-import com.makemark.model.dto.LoginResponse
-import com.makemark.model.dto.SignInDto
-import com.makemark.model.dto.SignUpDto
-import com.makemark.model.dto.UserDto
+import com.makemark.model.dto.*
 import com.makemark.model.entity.User
 import com.makemark.model.exception.UserNotFoundException
 import com.makemark.repository.UserRepository
@@ -16,6 +14,7 @@ import com.makemark.util.HashUtils
 import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
+import java.util.*
 
 @Service
 class UserService(
@@ -53,6 +52,21 @@ class UserService(
                     )
                 )
             }
+
+    suspend fun refreshToken(token: UUID): TokenWrapper =
+        sessionService.updateToken(token)
+            .run {
+                TokenWrapper(
+                    accessToken = jwtProvider.generateToken(this.userId).value,
+                    refreshToken = this.refreshToken
+                )
+            }
+
+    suspend fun logout(token: UUID): Unit =
+        with(sessionService.getByTokenOrThrow(token)) {
+            userCache.invalidateSuspending(userId)
+            sessionService.delete(this)
+        }
 
     suspend fun getByCredentials(email: String, passwordHash: String): User =
         userRepository.findByEmailAndPasswordHash(
